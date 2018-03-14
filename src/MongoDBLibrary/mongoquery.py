@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import json
 from bson.objectid import ObjectId
 from pymongo import ReturnDocument
@@ -5,12 +7,12 @@ from pymongo import ReturnDocument
 
 class MongoQuery(object):
     """
-    Query handles all the querying done by the MongoDB Library. 
+    Query handles all the querying done by the MongoDB Library.
     """
 
     def get_mongodb_databases(self):
         """
-        Returns a list of all of the databases currently on the MongoDB 
+        Returns a list of all of the databases currently on the MongoDB
         server you are connected to.
 
         Usage is:
@@ -19,7 +21,7 @@ class MongoQuery(object):
         | Should Contain | ${allDBs} | DBName |
         """
         allDBs = self._dbconnection.database_names()
-        print "| @{allDBs} | Get Mongodb Databases |"
+        print("| @{allDBs} | Get Mongodb Databases |")
         return allDBs
 
     def get_mongodb_collections(self, dbName):
@@ -38,7 +40,7 @@ class MongoQuery(object):
         except TypeError:
             self._builtin.fail("Connection failed, please make sure you have run 'Connect To Mongodb' first.")
         allCollections = db.collection_names()
-        print "| @{allCollections} | Get MongoDB Collections | %s |" % dbName
+        print("| @{allCollections} | Get MongoDB Collections | %s |" % dbName)
         return allCollections
 
     def drop_mongodb_database(self, dbDelName):
@@ -52,7 +54,7 @@ class MongoQuery(object):
         | Should Not Contain | ${allDBs} | myDB |
         """
         dbDelName = str(dbDelName)
-        print "| Drop MongoDB Database | %s |" % dbDelName
+        print("| Drop MongoDB Database | %s |" % dbDelName)
         try:
             self._dbconnection.drop_database('%s' % dbDelName)
         except TypeError:
@@ -74,11 +76,11 @@ class MongoQuery(object):
         except TypeError:
             self._builtin.fail("Connection failed, please make sure you have run 'Connect To Mongodb' first.")
         db.drop_collection('%s' % dbCollName)
-        print "| Drop MongoDB Collection | %s | %s |" % (dbName, dbCollName)
+        print("| Drop MongoDB Collection | %s | %s |" % (dbName, dbCollName))
 
     def validate_mongodb_collection(self, dbName, dbCollName):
         """
-        Returns a string of validation info. Raises CollectionInvalid if 
+        Returns a string of validation info. Raises CollectionInvalid if
         validation fails.
 
         Usage is:
@@ -92,7 +94,7 @@ class MongoQuery(object):
         except TypeError:
             self._builtin.fail("Connection failed, please make sure you have run 'Connect To Mongodb' first.")
         allResults = db.validate_collection('%s' % dbCollName)
-        print "| ${allResults} | Validate MongoDB Collection | %s | %s |" % (dbName, dbCollName)
+        print("| ${allResults} | Validate MongoDB Collection | %s | %s |" % (dbName, dbCollName))
         return allResults
 
     def get_mongodb_collection_count(self, dbName, dbCollName):
@@ -111,15 +113,15 @@ class MongoQuery(object):
             self._builtin.fail("Connection failed, please make sure you have run 'Connect To Mongodb' first.")
         coll = db['%s' % dbCollName]
         count = coll.count()
-        print "| ${allResults} | Get MongoDB Collection Count | %s | %s |" % (dbName, dbCollName)
+        print("| ${allResults} | Get MongoDB Collection Count | %s | %s |" % (dbName, dbCollName))
         return count
 
     def save_mongodb_records(self, dbName, dbCollName, recordJSON):
         """
-        If to_save already has an "_id" then an update() (upsert) operation is 
-        performed and any existing document with that "_id" is overwritten. 
-        Otherwise an insert() operation is performed. In this case if manipulate 
-        is True an "_id" will be added to to_save and this method returns the 
+        If to_save already has an "_id" then an update() (upsert) operation is
+        performed and any existing document with that "_id" is overwritten.
+        Otherwise an insert() operation is performed. In this case if manipulate
+        is True an "_id" will be added to to_save and this method returns the
         "_id" of the saved document.
 
         | ${allResults} | Save MongoDB Records | DBName | CollectionName | JSON |
@@ -143,7 +145,7 @@ class MongoQuery(object):
             self._builtin.fail("Connection failed, please make sure you have run 'Connect To Mongodb' first.")
         coll = db['%s' % dbCollName]
         allResults = coll.save(recordJSON)
-        print "| ${allResults} | Save MongoDB Records | %s | %s | %s |" % (dbName, dbCollName, recordJSON)
+        print("| ${allResults} | Save MongoDB Records | %s | %s | %s |" % (dbName, dbCollName, recordJSON))
         return allResults
 
     def update_many_mongodb_records(self, dbName, dbCollName, queryJSON, updateJSON, upsert=False):
@@ -169,9 +171,9 @@ class MongoQuery(object):
             self._builtin.fail("Connection failed, please make sure you have run 'Connect To Mongodb' first.")
         coll = db['%s' % collection_name]
         allResults = coll.update_many(query_json, update_json, upsert=upsert)
-        print "Matched: %i documents" % allResults.matched_count
-        print "| ${allResults} | Update Many MongoDB Records | %s | %s | %s | %s |" % (
-            dbName, dbCollName, query_json, update_json)
+        print("Matched: %i documents" % allResults.matched_count)
+        print("| ${allResults} | Update Many MongoDB Records | %s | %s | %s | %s |" % (
+            dbName, dbCollName, query_json, update_json))
         return allResults.modified_count
 
     def retrieve_all_mongodb_records(self, dbName, dbCollName, returnDocuments=False):
@@ -199,7 +201,7 @@ class MongoQuery(object):
         | Log | ${allResults} |
         | Should Contain X Times | ${allResults} | '${recordNo1}' | 1 |
         """
-        print "| ${allResults} | Retrieve Some MongoDB Records | %s | %s | %s |" % (dbName, dbCollName, recordJSON)
+        print("| ${allResults} | Retrieve Some MongoDB Records | %s | %s | %s |" % (dbName, dbCollName, recordJSON))
         return self._retrieve_mongodb_records(dbName, dbCollName, recordJSON, returnDocuments=returnDocuments)
 
     def retrieve_and_update_one_mongodb_record(self, dbName, dbCollName, queryJSON, updateJSON,
@@ -228,12 +230,12 @@ class MongoQuery(object):
             self._builtin.fail("Connection failed, please make sure you have run 'Connect To Mongodb' first.")
         coll = db['%s' % dbcollname]
         all_results = coll.find_one_and_update(record_json, update_json, return_document=document_to_return)
-        print "| ${allResults} | Retrieve And Update One Mongodb Record | %s | %s | %s | %s | %s" % (
+        print("| ${allResults} | Retrieve And Update One Mongodb Record | %s | %s | %s | %s | %s" % (
             dbname,
             dbcollname,
             queryJSON,
             updateJSON,
-            returnBeforeDocument)
+            returnBeforeDocument))
         return all_results
 
     def retrieve_mongodb_records_with_desired_fields(self, dbName, dbCollName, recordJSON, fields, return__id=True,
@@ -304,8 +306,8 @@ class MongoQuery(object):
         else:
             data = []
 
-        print "| ${allResults} | retreive_mongodb_records_with_desired_fields | %s | %s | %s | %s | %s |" % (
-            dbName, dbCollName, recordJSON, fields, return__id)
+        print("| ${allResults} | retreive_mongodb_records_with_desired_fields | %s | %s | %s | %s | %s |" % (
+            dbName, dbCollName, recordJSON, fields, return__id))
         return self._retrieve_mongodb_records(dbName, dbCollName, recordJSON, data, returnDocuments)
 
     def _retrieve_mongodb_records(self, dbName, dbCollName, recordJSON, fields=[], returnDocuments=False):
@@ -359,5 +361,5 @@ class MongoQuery(object):
             self._builtin.fail("Connection failed, please make sure you have run 'Connect To Mongodb' first.")
         coll = db['%s' % dbCollName]
         allResults = coll.remove(recordJSON)
-        print "| ${allResults} | Remove MongoDB Records | %s | %s | %s |" % (dbName, dbCollName, recordJSON)
+        print("| ${allResults} | Remove MongoDB Records | %s | %s | %s |" % (dbName, dbCollName, recordJSON))
         return allResults
