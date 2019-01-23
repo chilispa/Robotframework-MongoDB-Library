@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 from robot.libraries.BuiltIn import BuiltIn
 
 
@@ -18,17 +20,17 @@ class MongoConnectionManager(object):
                            dbDocClass=dict, dbTZAware=False):
         """
         Loads pymongo and connects to the MongoDB host using parameters submitted.
-        
+
         Example usage:
         | # To connect to foo.bar.org's MongoDB service on port 27017 |
         | Connect To MongoDB | foo.bar.org | ${27017} |
         | # Or for an authenticated connection, note addtion of "mongodb://" to host uri |
         | Connect To MongoDB | mongodb://admin:admin@foo.bar.org | ${27017} |
-        
+
         """
         dbapiModuleName = 'pymongo'
         db_api_2 = __import__(dbapiModuleName)
-        
+
         dbPort = int(dbPort)
         #print "host is               [ %s ]" % dbHost
         #print "port is               [ %s ]" % dbPort
@@ -37,20 +39,20 @@ class MongoConnectionManager(object):
         #print "slave_okay is         [ %s ]" % dbSlaveOkay
         #print "document_class is     [ %s ]" % dbDocClass
         #print "tz_aware is           [ %s ]" % dbTZAware
-        print "| Connect To MondoDB | dbHost | dbPort | dbMaxPoolSize | dbNetworktimeout | dbDocClass | dbTZAware |"
-        print "| Connect To MondoDB | %s | %s | %s | %s | %s | %s |" % (dbHost, dbPort, dbMaxPoolSize, dbNetworkTimeout,
-                                                                        dbDocClass, dbTZAware)
+        print("| Connect To MondoDB | dbHost | dbPort | dbMaxPoolSize | dbNetworktimeout | dbDocClass | dbTZAware |")
+        print("| Connect To MondoDB | %s | %s | %s | %s | %s | %s |" % (dbHost, dbPort, dbMaxPoolSize, dbNetworkTimeout,
+                                                                        dbDocClass, dbTZAware))
 
         self._dbconnection = db_api_2.MongoClient(host=dbHost, port=dbPort, socketTimeoutMS=dbNetworkTimeout,
                                          document_class=dbDocClass, tz_aware=dbTZAware,
                                          maxPoolSize=dbMaxPoolSize)
-        
+
     def disconnect_from_mongodb(self):
         """
         Disconnects from the MongoDB server.
-        
+
         For example:
-        | Disconnect From MongoDB | # disconnects from current connection to the MongoDB server | 
+        | Disconnect From MongoDB | # disconnects from current connection to the MongoDB server |
         """
-        print "| Disconnect From MongoDB |"
+        print("| Disconnect From MongoDB |")
         self._dbconnection.close()
