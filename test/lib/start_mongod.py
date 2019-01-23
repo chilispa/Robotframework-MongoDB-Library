@@ -31,7 +31,7 @@ class MongoTemporaryInstance():
         for i in range(3):
             time.sleep(0.1)
             try:
-                print i
+                print(i)
                 self._conn = pymongo.MongoClient('localhost', self._mongodb_port)
             except pymongo.errors.ConnectionFailure:
                 continue
@@ -40,7 +40,7 @@ class MongoTemporaryInstance():
         else:
             self.shutdown()
             assert False, 'Cannot connect to the mongodb test instance'
-        print 'DONE'
+        print('DONE')
 
     def mongo_create_db(self, db, collection, data):
         test_db = self._conn[db]
@@ -63,7 +63,8 @@ class MongoTemporaryInstance():
             self._process = None
             shutil.rmtree(self._tmpdir, ignore_errors=True)
 
-"""
+
+'''
 if __name__ == '__main__':
     db = MongoTemporaryInstance()
     db.start_mongodb()
@@ -73,5 +74,4 @@ if __name__ == '__main__':
     db.mongo_inser_data(data)
 
     db.shutdown()
-
-"""
+'''

@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import json
+
 from bson.objectid import ObjectId
 from pymongo import ReturnDocument
 
@@ -116,7 +117,7 @@ class MongoQuery(object):
         print("| ${allResults} | Get MongoDB Collection Count | %s | %s |" % (dbName, dbCollName))
         return count
 
-    def save_mongodb_records(self, dbName, dbCollName, recordJSON):
+    def save_mongodb_records(self, dbName, dbCollName, recordJSON, id_format='objectId'):
         """
         If to_save already has an "_id" then an update() (upsert) operation is
         performed and any existing document with that "_id" is overwritten.
@@ -137,7 +138,7 @@ class MongoQuery(object):
         dbName = str(dbName)
         dbCollName = str(dbCollName)
         recordJSON = dict(json.loads(recordJSON))
-        if '_id' in recordJSON:
+        if '_id' in recordJSON and id_format == 'objectId':
             recordJSON['_id'] = ObjectId(recordJSON['_id'])
         try:
             db = self._dbconnection['%s' % (dbName,)]
@@ -148,7 +149,8 @@ class MongoQuery(object):
         print("| ${allResults} | Save MongoDB Records | %s | %s | %s |" % (dbName, dbCollName, recordJSON))
         return allResults
 
-    def update_many_mongodb_records(self, dbName, dbCollName, queryJSON, updateJSON, upsert=False):
+    def update_many_mongodb_records(self, dbName, dbCollName, queryJSON, updateJSON, upsert=False,
+                                    id_format='objectId'):
         """
         Update many MongoDB records at ones based on the given query string and
         return number of modified documents.
@@ -163,7 +165,7 @@ class MongoQuery(object):
         collection_name = str(dbCollName)
         query_json = json.loads(queryJSON)
         update_json = json.loads(updateJSON)
-        if '_id' in query_json:
+        if '_id' in query_json and id_format == 'objectId':
             query_json['_id'] = ObjectId(queryJSON['_id'])
         try:
             db = self._dbconnection['%s' % (db_name,)]
@@ -205,7 +207,7 @@ class MongoQuery(object):
         return self._retrieve_mongodb_records(dbName, dbCollName, recordJSON, returnDocuments=returnDocuments)
 
     def retrieve_and_update_one_mongodb_record(self, dbName, dbCollName, queryJSON, updateJSON,
-                                               returnBeforeDocument=False):
+                                               returnBeforeDocument=False, id_format='objectId'):
         """
         Retrieve and update one record from a given MongoDB database collection
         based on the JSON query string. Return format is robot dictionary.
@@ -222,7 +224,7 @@ class MongoQuery(object):
         record_json = dict(json.loads(queryJSON))
         update_json = dict(json.loads(updateJSON))
         document_to_return = ReturnDocument.BEFORE if returnBeforeDocument is True else ReturnDocument.AFTER
-        if '_id' in record_json:
+        if '_id' in record_json and id_format == 'objectId':
             record_json['_id'] = ObjectId(record_json['_id'])
         try:
             db = self._dbconnection['%s' % (dbname,)]
@@ -331,7 +333,7 @@ class MongoQuery(object):
                 response = '%s%s' % (response, d.items())
             return response
 
-    def remove_mongodb_records(self, dbName, dbCollName, recordJSON):
+    def remove_mongodb_records(self, dbName, dbCollName, recordJSON, id_format='objectId'):
         """
         Remove some of the records from a given MongoDB database collection
         based on the JSON entered.
@@ -353,7 +355,7 @@ class MongoQuery(object):
         dbName = str(dbName)
         dbCollName = str(dbCollName)
         recordJSON = json.loads(recordJSON)
-        if '_id' in recordJSON:
+        if '_id' in recordJSON and id_format == 'objectId':
             recordJSON['_id'] = ObjectId(recordJSON['_id'])
         try:
             db = self._dbconnection['%s' % (dbName,)]

@@ -9,4 +9,5 @@ output.xml
 log.html
 *.sublime-project
 *.sublime-workspace
+venv/
 
