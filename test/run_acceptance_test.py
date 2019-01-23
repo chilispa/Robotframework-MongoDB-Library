@@ -1,9 +1,9 @@
-import env
 import os
 import sys
 from subprocess import call
-import start_mongod
 
+from test import env
+from test.lib import start_mongod
 
 """
 Credits for Selenium2Library project for creating the original version
@@ -51,14 +51,13 @@ def execute_tests(runner, args):
     if not os.path.exists(env.RESULTS_DIR):
         os.mkdir(env.RESULTS_DIR)
     command = [runner] + [arg % ARG_VALUES for arg in ROBOT_ARGS] + args + [env.ACCEPTANCE_TEST_DIR]
-    print ''
-    print 'Starting test execution with command:\n' + ' '.join(command)
+    print('')
+    print('Starting test execution with command:\n' + ' '.join(command))
     syslog = os.path.join(env.RESULTS_DIR, 'syslog.txt')
     call(command, shell=os.sep == '\\', env=dict(os.environ, ROBOT_SYSLOG_FILE=syslog))
 
 
 def process_output():
-    print
     if _has_robot_27():
         call(['python', os.path.join(env.RESOURCES_DIR, 'statuschecker.py'),
              os.path.join(env.RESULTS_DIR, 'output.xml')])
@@ -67,9 +66,9 @@ def process_output():
                 [os.path.join(ARG_VALUES['outdir'], 'output.xml')]
     rc = call(rebot_cmd, env=os.environ)
     if rc == 0:
-        print 'All critical tests passed'
+        print('All critical tests passed')
     else:
-        print '%d critical test%s failed' % (rc, 's' if rc != 1 else '')
+        print('%d critical test%s failed' % (rc, 's' if rc != 1 else ''))
     return rc
 
 
@@ -86,9 +85,8 @@ def _exit(rc):
 
 
 def _help():
-    print 'Usage:  python run_tests.py python|jython [options]'
-    print
-    print 'See README.txt for details.'
+    print('Usage:  python run_tests.py python|jython [options]')
+    print('See README.txt for details.')
     return 255
 
 
