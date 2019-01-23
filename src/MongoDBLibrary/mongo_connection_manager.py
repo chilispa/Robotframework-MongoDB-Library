@@ -15,7 +15,6 @@ class MongoConnectionManager(object):
         self._dbconnection = None
         self._builtin = BuiltIn()
 
-
     def connect_to_mongodb(self, dbHost='localhost', dbPort=27017, dbMaxPoolSize=10, dbNetworkTimeout=None,
                            dbDocClass=dict, dbTZAware=False):
         """
@@ -32,20 +31,13 @@ class MongoConnectionManager(object):
         db_api_2 = __import__(dbapiModuleName)
 
         dbPort = int(dbPort)
-        #print "host is               [ %s ]" % dbHost
-        #print "port is               [ %s ]" % dbPort
-        #print "pool_size is          [ %s ]" % dbPoolSize
-        #print "timeout is            [ %s ]" % dbTimeout
-        #print "slave_okay is         [ %s ]" % dbSlaveOkay
-        #print "document_class is     [ %s ]" % dbDocClass
-        #print "tz_aware is           [ %s ]" % dbTZAware
-        print("| Connect To MondoDB | dbHost | dbPort | dbMaxPoolSize | dbNetworktimeout | dbDocClass | dbTZAware |")
-        print("| Connect To MondoDB | %s | %s | %s | %s | %s | %s |" % (dbHost, dbPort, dbMaxPoolSize, dbNetworkTimeout,
+        print("| Connect To MongoDB | dbHost | dbPort | dbMaxPoolSize | dbNetworktimeout | dbDocClass | dbTZAware |")
+        print("| Connect To MongoDB | %s | %s | %s | %s | %s | %s |" % (dbHost, dbPort, dbMaxPoolSize, dbNetworkTimeout,
                                                                         dbDocClass, dbTZAware))
 
         self._dbconnection = db_api_2.MongoClient(host=dbHost, port=dbPort, socketTimeoutMS=dbNetworkTimeout,
-                                         document_class=dbDocClass, tz_aware=dbTZAware,
-                                         maxPoolSize=dbMaxPoolSize)
+                                                  document_class=dbDocClass, tz_aware=dbTZAware,
+                                                  maxPoolSize=dbMaxPoolSize)
 
     def disconnect_from_mongodb(self):
         """
