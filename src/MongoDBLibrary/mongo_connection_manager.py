@@ -1,5 +1,9 @@
 from __future__ import print_function
 
+import robot
+import robot.utils
+from pymongo import MongoClient
+from robot.api import logger
 from robot.libraries.BuiltIn import BuiltIn
 
 
@@ -12,11 +16,32 @@ class MongoConnectionManager(object):
         """
         Initializes _dbconnection to None.
         """
-        self._dbconnection = None
+        self._cache = robot.utils.ConnectionCache('No connection created')
         self._builtin = BuiltIn()
 
-    def connect_to_mongodb(self, dbHost='localhost', dbPort=27017, dbMaxPoolSize=10, dbNetworkTimeout=None,
-                           dbDocClass=dict, dbTZAware=False):
+    def _push_cache(self, alias=None, connection=None):
+        """
+         Overlay _cache.register using dictionary
+         Create a dictionary that contains the dbconnection and the api_module used
+         and push it into the cache
+        """
+        logger.info("Connection Name:" % alias)
+        obj_dict = {'connection': connection}
+        self._cache.register(obj_dict, alias=alias)
+
+    def _get_cache(self, alias=None):
+        """
+         Overlay _cache.switch using dictionary
+         Get from cache the dictionary contain dbconnection and api_module
+         and return them
+        """
+        obj_dict = self._cache.switch(alias)
+        db_connection = obj_dict['connection']
+
+        return db_connection
+
+    def connect_to_mongodb(self, alias, dbHost='localhost', dbPort=27017, dbMaxPoolSize=10, dbNetworkTimeout=None,
+                           dbDocClass=dict, dbTZAware=False, uri=None):
         """
         Loads pymongo and connects to the MongoDB host using parameters submitted.
 
@@ -27,17 +52,19 @@ class MongoConnectionManager(object):
         | Connect To MongoDB | mongodb://admin:admin@foo.bar.org | ${27017} |
 
         """
-        dbapiModuleName = 'pymongo'
-        db_api_2 = __import__(dbapiModuleName)
 
         dbPort = int(dbPort)
         print("| Connect To MongoDB | dbHost | dbPort | dbMaxPoolSize | dbNetworktimeout | dbDocClass | dbTZAware |")
         print("| Connect To MongoDB | %s | %s | %s | %s | %s | %s |" % (dbHost, dbPort, dbMaxPoolSize, dbNetworkTimeout,
                                                                         dbDocClass, dbTZAware))
+        if uri:
+            db_connection = MongoClient(host=uri)
+        else:
+            db_connection = MongoClient(host=dbHost, port=dbPort, socketTimeoutMS=dbNetworkTimeout,
+                                        document_class=dbDocClass, tz_aware=dbTZAware,
+                                        maxPoolSize=dbMaxPoolSize)
 
-        self._dbconnection = db_api_2.MongoClient(host=dbHost, port=dbPort, socketTimeoutMS=dbNetworkTimeout,
-                                                  document_class=dbDocClass, tz_aware=dbTZAware,
-                                                  maxPoolSize=dbMaxPoolSize)
+        self._push_cache(alias, db_connection)
 
     def disconnect_from_mongodb(self):
         """
@@ -47,4 +74,4 @@ class MongoConnectionManager(object):
         | Disconnect From MongoDB | # disconnects from current connection to the MongoDB server |
         """
         print("| Disconnect From MongoDB |")
-        self._dbconnection.close()
+        self._db_connection.close()

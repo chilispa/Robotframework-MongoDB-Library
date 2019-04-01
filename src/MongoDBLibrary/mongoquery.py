@@ -11,7 +11,7 @@ class MongoQuery(object):
     Query handles all the querying done by the MongoDB Library.
     """
 
-    def get_mongodb_databases(self):
+    def get_mongodb_databases(self, alias):
         """
         Returns a list of all of the databases currently on the MongoDB
         server you are connected to.
@@ -21,7 +21,8 @@ class MongoQuery(object):
         | Log Many | @{allDBs} |
         | Should Contain | ${allDBs} | DBName |
         """
-        allDBs = self._dbconnection.database_names()
+        connection = self._get_cache(alias)
+        allDBs = self.connection.database_names()
         print("| @{allDBs} | Get Mongodb Databases |")
         return allDBs
 
