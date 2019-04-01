@@ -41,8 +41,8 @@ class MongoConnectionManager(object):
 
         return db_connection
 
-    def connect_to_mongodb(self, alias, dbHost='localhost', dbPort=27017, dbMaxPoolSize=10, dbNetworkTimeout=None,
-                           dbDocClass=dict, dbTZAware=False, uri=None):
+    def connect_to_mongodb(self, dbHost='localhost', dbPort=27017, dbMaxPoolSize=10, dbNetworkTimeout=None,
+                           dbDocClass=dict, dbTZAware=False, uri=None, alias=None):
         """
         Loads pymongo and connects to the MongoDB host using parameters submitted.
 
@@ -70,7 +70,7 @@ class MongoConnectionManager(object):
 
         self._push_cache(alias, db_connection)
 
-    def disconnect_from_mongodb(self, alias):
+    def disconnect_from_mongodb(self, alias=None):
         """
         Disconnects from the MongoDB server.
 
