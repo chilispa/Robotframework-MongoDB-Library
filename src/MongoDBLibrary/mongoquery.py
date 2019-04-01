@@ -148,7 +148,7 @@ class MongoQuery(object):
         if '_id' in recordJSON and id_format == 'objectId':
             recordJSON['_id'] = ObjectId(recordJSON['_id'])
         try:
-            db = self.connection['%s' % (dbName,)]
+            db = connection['%s' % (dbName,)]
         except TypeError:
             self._builtin.fail("Connection failed, please make sure you have run 'Connect To Mongodb' first.")
         coll = db['%s' % dbCollName]
@@ -186,7 +186,7 @@ class MongoQuery(object):
             dbName, dbCollName, query_json, update_json))
         return allResults.modified_count
 
-    def retrieve_all_mongodb_records(self, dbName, dbCollName, returnDocuments=False):
+    def retrieve_all_mongodb_records(self, dbName, dbCollName, returnDocuments=False, alias=None):
         """
         Retrieve ALL of the records in a give MongoDB database collection.
         Returned value must be single quoted for comparison, otherwise you will
@@ -197,9 +197,9 @@ class MongoQuery(object):
         | Log | ${allResults} |
         | Should Contain X Times | ${allResults} | '${recordNo1}' | 1 |
         """
-        return self._retrieve_mongodb_records(dbName, dbCollName, '{}', returnDocuments=returnDocuments)
+        return self._retrieve_mongodb_records(dbName, dbCollName, '{}', returnDocuments=returnDocuments, alias=alias)
 
-    def retrieve_some_mongodb_records(self, dbName, dbCollName, recordJSON, returnDocuments=False):
+    def retrieve_some_mongodb_records(self, dbName, dbCollName, recordJSON, returnDocuments=False, alias=None):
         """
         Retrieve some of the records from a given MongoDB database collection
         based on the JSON entered.
@@ -212,7 +212,8 @@ class MongoQuery(object):
         | Should Contain X Times | ${allResults} | '${recordNo1}' | 1 |
         """
         print("| ${allResults} | Retrieve Some MongoDB Records | %s | %s | %s |" % (dbName, dbCollName, recordJSON))
-        return self._retrieve_mongodb_records(dbName, dbCollName, recordJSON, returnDocuments=returnDocuments)
+        return self._retrieve_mongodb_records(dbName, dbCollName, recordJSON, returnDocuments=returnDocuments,
+                                              alias=alias)
 
     def retrieve_and_update_one_mongodb_record(self, dbName, dbCollName, queryJSON, updateJSON,
                                                returnBeforeDocument=False, id_format='objectId', alias=None):

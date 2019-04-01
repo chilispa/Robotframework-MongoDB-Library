@@ -3,7 +3,7 @@ from __future__ import print_function
 import robot
 import robot.utils
 from pymongo import MongoClient
-from robot.api import logger
+
 from robot.libraries.BuiltIn import BuiltIn
 
 
@@ -25,8 +25,9 @@ class MongoConnectionManager(object):
          Create a dictionary that contains the dbconnection and the api_module used
          and push it into the cache
         """
-        logger.info("Connection Name:" % alias)
+
         obj_dict = {'connection': connection}
+
         self._cache.register(obj_dict, alias=alias)
 
     def _get_cache(self, alias=None):
@@ -50,7 +51,10 @@ class MongoConnectionManager(object):
         | Connect To MongoDB | foo.bar.org | ${27017} |
         | # Or for an authenticated connection, note addtion of "mongodb://" to host uri |
         | Connect To MongoDB | mongodb://admin:admin@foo.bar.org | ${27017} |
+        | # Or for an connection with db uri |
+        | Connect To MongoDB | mongodb://admin:admin@foo.bar.org/27017 |
 
+        Added new field alias
         """
 
         dbPort = int(dbPort)
@@ -66,12 +70,16 @@ class MongoConnectionManager(object):
 
         self._push_cache(alias, db_connection)
 
-    def disconnect_from_mongodb(self):
+    def disconnect_from_mongodb(self, alias):
         """
         Disconnects from the MongoDB server.
 
         For example:
         | Disconnect From MongoDB | # disconnects from current connection to the MongoDB server |
+
+        Added new field alias
         """
         print("| Disconnect From MongoDB |")
-        self._db_connection.close()
+
+        connection = self._get_cache(alias)
+        connection.close()
